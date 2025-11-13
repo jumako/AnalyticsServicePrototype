@@ -1,38 +1,93 @@
-Hier is de volledige documentatie, in het Nederlands, zonder emoji’s, zonder iconen, met vermelding dat de database technisch niets doet, en in een serieuze, zakelijke stijl passend voor school of Confluence.
-
-
-# AnalyticsServicePrototype – Documentatie
+# AnalyticsServicePrototype
 
 ## Overzicht
 
-De AnalyticsServicePrototype is een Elixir/Phoenix-gebaseerde microservice die is ontwikkeld voor Project 42.
-De service bevat alle basisstructuren voor een toekomstige analytics-module, zoals het verzamelen van gevechtsresultaten, het berekenen van spelerstatistieken, het genereren van leaderboards en het tonen van gameplaytrends.
+De AnalyticsServicePrototype is een Elixir/Phoenix-gebaseerde microservice die is ontwikkeld voor het CNI project.
+De service bevat alle basisstructuren voor een toekomstige analyticsservice, zoals het verzamelen van gevechtsresultaten, het berekenen van spelerstatistieken, het genereren van leaderboards en het tonen van gameplaytrends.
 
 In deze prototypeversie worden alle resultaten en berekeningen uitgevoerd via een interne mock-service.
-Dit betekent dat er geen echte data wordt opgeslagen en dat de database, hoewel technisch ingericht, op dit moment niet actief wordt gebruikt.
-Ecto en PostgreSQL zijn aangesloten om aan te sluiten op de eisen van de opdracht en toekomstbestendigheid, maar functioneren in deze fase alleen als infrastructuurvoorbereiding.
-
-Ons onderzoek wees uit dat de analytics-logica efficiënter kon worden uitgevoerd via in-memory mock services zolang er geen echte data wordt geproduceerd in het spel. Daarom is ervoor gekozen om de database niet te vullen of migraties te implementeren.
+Dit betekent dat er geen echte data wordt opgeslagen. Er word wel gebruik gemaakt van docker om een database te runnen, maar dat is omdat de standaard configuratie probeert te verbinden met localhost 5173 voor een database en ik geen zin heb om al die configuraties te zoeken en eruit te halen. Nu kan ik ook tegelijk mijn kennis van de avisi workshop hier gebruiken :)
 
 
-# Functionaliteit
+## Functionaliteit
 
-1. Game Result Tracking
+1. **Game Result Tracking**
    Verwerkt gevechtsresultaten als mock-data. De service valideert input en geeft een bevestigingsbericht terug. Er wordt niets opgeslagen in de database.
 
-2. Statistiekberekening
+2. **Statistiekberekening**
    Levert statistieken zoals winrate, wins, losses, gemiddelde schade en totaal aantal gevechten, volledig gegenereerd door de mock-service.
 
-3. Leaderboard
+3. **Leaderboard**
    Retourneert een lijst met spelers gesorteerd op prestaties. De waarden zijn statisch en gegenereerd door de mock-service.
 
-4. Trends en Gameplay Insights
+4. **Trends en Gameplay Insights**
    Geeft informatie over populaire kaarten, algemene winrates en trends. Deze waarden zijn eveneens mock-data.
 
 
-# Het draaien van de service
+## Installatie
 
-## 1. Start PostgreSQL via Docker
+Voor het draaien en ontwikkelen van de AnalyticsServicePrototype zijn Elixir, Erlang, Phoenix en PostgreSQL vereist. Hieronder staat het volledige installatieproces zoals toegepast tijdens het opzetten van dit project.
+
+### 1. Installatie van Erlang
+
+Erlang is noodzakelijk omdat Elixir bovenop de Erlang VM draait.
+
+Download en installeer Erlang voor Windows via de officiële website:
+[https://www.erlang.org/downloads.html](https://www.erlang.org/downloads.html)
+
+Na installatie kan de versie worden gecontroleerd met:
+
+```
+erl
+```
+
+### 2. Installatie van Elixir
+
+Installeer Elixir via de officiële Windows instructies:
+[https://elixir-lang.org/install.html#windows](https://elixir-lang.org/install.html#windows)
+
+Controleer daarna of Elixir correct werkt:
+
+```
+elixir --version
+```
+
+Als dit werkt, zijn zowel Elixir als Erlang correct geïnstalleerd.
+
+### 3. Installatie van Phoenix
+
+Phoenix wordt niet standaard meegeleverd met Elixir.
+Installeer de Phoenix projectgenerator met:
+
+```
+mix archive.install hex phx_new
+```
+
+Controleer of de Phoenix generator werkt:
+
+```
+mix phx.new --version
+```
+
+### 4. Aanmaken van het project
+
+Een nieuw Phoenix project zonder HTML of frontend-assets kan als volgt worden aangemaakt:
+
+```
+mix phx.new analytics_service_prototype --no-html --no-assets
+```
+
+Hierna installeert Phoenix automatisch de dependencies.
+Ga vervolgens de projectmap in:
+
+```
+cd analytics_service_prototype
+```
+
+
+## Het draaien van de service
+
+### 1. Start PostgreSQL via Docker
 
 Hoewel de database op dit moment niet gebruikt wordt, moet PostgreSQL draaien omdat Phoenix anders een foutmelding geeft zodra Ecto probeert te verbinden.
 
@@ -46,13 +101,13 @@ Herstarten kan als volgt:
 docker start analytics-db
 ```
 
-## 2. Dependencies installeren
+### 2. Dependencies installeren
 
 ```
 mix deps.get
 ```
 
-## 3. Database aanmaken
+### 3. Database aanmaken
 
 De database wordt formeel aangemaakt zodat Ecto geen fout genereert.
 Er worden geen tabellen of migraties uitgevoerd, en er wordt geen data opgeslagen.
@@ -61,17 +116,18 @@ Er worden geen tabellen of migraties uitgevoerd, en er wordt geen data opgeslage
 mix ecto.create
 ```
 
-## 4. Server starten
+### 4. Server starten
 
 ```
 mix phx.server
 ```
 
-De API draait op
+De API draait op:
 [http://localhost:4000](http://localhost:4000)
 
+---
 
-# Folderstructuur
+## Folderstructuur
 
 Deze structuur komt overeen met het huidige prototype.
 
@@ -114,10 +170,11 @@ analytics_service_prototype/
 └── README.md
 ```
 
+---
 
-# API Endpoints
+## API Endpoints
 
-## POST /results
+### POST /results
 
 Verwerkt de uitslag van een gevecht.
 De data wordt niet opgeslagen, maar verwerkt door de mock-service.
@@ -142,7 +199,7 @@ Voorbeeldresponse:
 }
 ```
 
-## GET /stats/:playerId
+### GET /stats/:playerId
 
 Retourneert mock-statistieken voor een speler.
 
@@ -159,7 +216,7 @@ Voorbeeldresponse:
 }
 ```
 
-## GET /leaderboard
+### GET /leaderboard
 
 ```json
 [
@@ -178,7 +235,7 @@ Voorbeeldresponse:
 ]
 ```
 
-## GET /trends
+### GET /trends
 
 ```json
 {
@@ -188,36 +245,37 @@ Voorbeeldresponse:
 }
 ```
 
+## Curl voorbeelden (Windows)
 
-# Curl voorbeelden (geschikt voor Windows CMD)
+Er is ook een bestand genaamd `analytics.http` waar je de requests kan uitvoeren.
+Als je op vscode de Rest Client extension van Huachao Mao installeerd kan je gewoon klikken op `Send request` in het bestand.
 
-## POST result
+### POST result
 
 ```
 curl -X POST http://localhost:4000/results -H "Content-Type: application/json" -d "{\"winner_id\":\"player123\",\"loser_id\":\"player999\",\"winner_damage\":42,\"loser_damage\":10}"
 ```
 
-## GET stats
+### GET stats
 
 ```
 curl http://localhost:4000/stats/player123
 ```
 
-## GET leaderboard
+### GET leaderboard
 
 ```
 curl http://localhost:4000/leaderboard
 ```
 
-## GET trends
+### GET trends
 
 ```
 curl http://localhost:4000/trends
 ```
 
----
 
-# Models (Contracts)
+## Models (Contracts)
 
 Deze modellen definiëren de structuur van de gebruikte data.
 Ze worden gebruikt door de endpointcontrollers en de mock-service.
@@ -246,12 +304,11 @@ defstruct [:player_id, :rank, :win_rate, :games_played]
 defstruct [:popular_cards, :global_win_rate, :meta_shifts]
 ```
 
----
 
-# Conclusie
+## Conclusie
 
 De AnalyticsServicePrototype biedt een volledige API-structuur met mock-logica.
 Hoewel de service een PostgreSQL-database vereist om te starten, wordt deze in de huidige versie niet gebruikt. Dit is een bewuste keuze op basis van onderzoek en projectdoelen. Alle data wordt gegenereerd in-memory via de MockAnalyticsService.
 
-Wanneer het spel echte statistieken gaat leveren, kan deze service eenvoudig worden uitgebreid met Ecto-schema’s, migraties en daadwerkelijke opslag in PostgreSQL.
+Wanneer het spel echte statistieken gaat leveren, kan deze service eenvoudig worden uitgebreid met Ecto-schema’s, migraties en daadwerkelijke opslag in de database.
 
