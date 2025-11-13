@@ -1,0 +1,19 @@
+### POST game result
+POST http://localhost:4000/results
+Content-Type: application/json
+
+{
+  "winner_id": "player123",
+  "loser_id": "player999",
+  "winner_damage": 42,
+  "loser_damage": 10
+}
+
+### GET player stats
+GET http://localhost:4000/stats/player123
+
+### GET leaderboard
+GET http://localhost:4000/leaderboard
+
+### GET trends
+GET http://localhost:4000/trends
