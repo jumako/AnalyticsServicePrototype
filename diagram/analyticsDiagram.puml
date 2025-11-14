@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/class-diagram
+class "application.ex" as app {
++start(type, args) : {:ok, pid}
++config_change(changed, new, removed) : :ok
+}
+package "Structs" #line:Black{
+class "leaderboard_entry.ex" as leaderboardEntry <<Struct>> {
++player_id: integer
++rank : String
++win_rate: float
++games_played : integer
+}
+
+class "player_stats.ex" as playerStats <<Struct>> {
++player_id : integer
++games_played : integer
++wins : integer
++losses : integer
++win_rate: float
++avg_damage : integer
+}
+}
+
+app ..> leaderboardEntry : route /leaderboard
+app ..> playerStats :route /stats/:playerId
+
+leaderboardEntry ..> app : route /leaderboard/top20
+playerStats ..> app : route /stats/:playerId/getStats
+
+
+
+
+@enduml
